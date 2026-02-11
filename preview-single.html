@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DST 目标管理系统 - 单页预览</title>
+    <style>
+      :root {
+        --bg-body: #f5f7fb;
+        --card-bg: #fff;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-tertiary: #94a3b8;
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --sidebar-bg: #0f172a;
+        --sidebar-text: #cbd5f5;
+        --border: rgba(15, 23, 42, 0.08);
+        --radius: 10px;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+        background: var(--bg-body);
+        color: var(--text-primary);
+      }
+
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 220px;
+        background: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        padding: 18px 12px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        padding: 8px 10px;
+      }
+
+      .logo-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .nav button {
+        background: transparent;
+        border: 0;
+        color: var(--sidebar-text);
+        padding: 10px 12px;
+        border-radius: 10px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .nav button.active,
+      .nav button:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px 24px 32px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background: rgba(255,255,255,0.9);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 18px;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0,1fr));
+        gap: 12px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 12px;
+      }
+
+      .section {
+        display: none;
+        gap: 14px;
+      }
+
+      .section.active { display: grid; }
+
+      .section-title {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .sub { color: var(--text-tertiary); font-size: 13px; }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th { color: var(--text-secondary); font-weight: 700; }
+
+      .tag {
+        display: inline-flex;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+        font-size: 12px;
+      }
+
+      .tag.green { background: #e8f7ef; color: #0f7a50; }
+      .tag.red { background: #fdecec; color: #b42318; }
+      .tag.yellow { background: #fff7e0; color: #b07b00; }
+      .tag.blue { background: #e8f1ff; color: #1d4ed8; }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        font-size: 12px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .input {
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+
+      .btn {
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .btn.secondary { background: #e2e8f0; color: #0f172a; }
+
+      @media (max-width: 1100px) {
+        .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .grid-2 { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 760px) {
+        .app { flex-direction: column; }
+        .sidebar { width: 100%; height: auto; position: relative; }
+        .content { padding: 16px; }
+        .grid-4 { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="logo-badge">DST</div>
+          <div>
+            <div style="font-weight:700">目标管理系统</div>
+            <div class="sub">单页预览</div>
+          </div>
+        </div>
+        <div class="nav" id="nav">
+          <button class="active" data-section="dashboard">驾驶舱</button>
+          <button data-section="workbench">工作台</button>
+          <button data-section="indicators">指标字典</button>
+          <button data-section="targets">目标管理</button>
+          <button data-section="changes">变更管理</button>
+          <button data-section="roles">角色权限管理</button>
+          <button data-section="users">用户管理</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="header">
+          <div class="sub">2026年2月11日星期三</div>
+          <div class="toolbar">
+            <span class="pill">管理员</span>
+            <button class="btn secondary">待办入口</button>
+          </div>
+        </div>
+
+        <section class="section active" id="dashboard">
+          <div class="section-title">
+            <div>
+              <div class="title">指标驾驶舱</div>
+              <div class="sub">先看全局灯态与异常溯源，再看填报管控与指标明细</div>
+            </div>
+            <div class="toolbar">
+              <span class="pill">战役级</span>
+              <span class="pill">2月</span>
+            </div>
+          </div>
+          <div class="grid-4">
+            <div class="card"><div class="sub">绿灯指标</div><div style="font-size:22px;font-weight:800">0（0%）</div></div>
+            <div class="card"><div class="sub">黄灯指标</div><div style="font-size:22px;font-weight:800">2（40%）</div></div>
+            <div class="card"><div class="sub">红灯指标</div><div style="font-size:22px;font-weight:800">3（60%）</div></div>
+            <div class="card"><div class="sub">综合达成率</div><div style="font-size:22px;font-weight:800">94.3%</div></div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div style="font-weight:700; margin-bottom:10px">红黄绿灯占比</div>
+              <div class="sub">图表预览位</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700; margin-bottom:10px">红灯指标聚焦</div>
+              <div class="sub">投诉率 / 客户留存率 / 坏账率</div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-weight:700; margin-bottom:10px">指标明细</div>
+            <div class="toolbar" style="margin-bottom:10px">
+              <input class="input" placeholder="搜索指标名称/编号" />
+              <input class="input" placeholder="责任人" />
+              <input class="input" placeholder="状态" />
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>指标名称</th><th>责任人</th><th>状态</th><th>达成率</th><th>本月数值</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>客户满意度</td><td>李四</td><td><span class="tag yellow">黄灯</span></td><td>98.1%</td><td>93.2%</td>
+                </tr>
+                <tr>
+                  <td>投诉率</td><td>李四</td><td><span class="tag red">红灯</span></td><td>71.4%</td><td>2.8%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="workbench">
+          <div class="section-title">
+            <div>
+              <div class="title">工作台</div>
+              <div class="sub">仅展示当前操作者负责的指标，并进行当月达成填报</div>
+            </div>
+            <div class="toolbar">
+              <span class="pill">当前用户：小王</span>
+              <select class="input">
+                <option>2月</option><option>3月</option><option>4月</option>
+              </select>
+            </div>
+          </div>
+          <div class="card">
+            <table>
+              <thead>
+                <tr>
+                  <th>指标名称</th><th>部门</th><th>目标值(2月)</th><th>本月实际(2月)</th><th>达成率</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>渠道新客转化率</td><td>市场部</td><td>32 %</td><td><input class="input" value="29.4" /></td><td>91.9%</td><td><button class="btn">提交</button></td>
+                </tr>
+                <tr>
+                  <td>重点客户拜访数</td><td>销售部</td><td>20 次</td><td><input class="input" value="16" /></td><td>80.0%</td><td><button class="btn">提交</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="indicators">
+          <div class="section-title">
+            <div>
+              <div class="title">指标字典</div>
+              <div class="sub">管理指标全量定义、层级关系与数据源</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="toolbar" style="margin-bottom:10px">
+              <input class="input" placeholder="搜索指标名称/ID/部门/责任人" />
+              <input class="input" placeholder="所属战役" />
+              <input class="input" placeholder="指标层级" />
+              <input class="input" placeholder="数据来源" />
+            </div>
+            <table>
+              <thead>
+                <tr><th>指标ID</th><th>指标名称</th><th>部门/责任人</th><th>层级</th><th>状态</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>IMS_202601010001</td><td>月度营收</td><td>财务部/张三</td><td>公司级</td><td><span class="tag green">已生效</span></td></tr>
+                <tr><td>IMS_202601010002</td><td>客户满意度</td><td>客服部/李四</td><td>战役级</td><td><span class="tag green">已生效</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="targets">
+          <div class="section-title">
+            <div>
+              <div class="title">目标管理</div>
+              <div class="sub">目标定义与进度填报双路径管理</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="toolbar" style="margin-bottom:10px">
+              <input class="input" placeholder="搜索指标名称/编号" />
+              <input class="input" placeholder="责任人" />
+              <input class="input" placeholder="锁定状态" />
+            </div>
+            <table>
+              <thead>
+                <tr><th>指标名称</th><th>部门</th><th>年度目标</th><th>状态</th><th>操作</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>月度营收</td><td>财务部</td><td>12000 万元</td><td><span class="tag green">已锁定</span></td><td>查看</td></tr>
+                <tr><td>人均产能</td><td>运营部</td><td>100 标准工时</td><td><span class="tag yellow">填报中</span></td><td>录入</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="changes">
+          <div class="section-title">
+            <div>
+              <div class="title">变更管理</div>
+              <div class="sub">指标与目标变更申请与审批</div>
+            </div>
+          </div>
+          <div class="card">
+            <table>
+              <thead>
+                <tr><th>申请单</th><th>指标</th><th>申请人</th><th>状态</th><th>操作</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>CHG-20260211-001</td><td>客户满意度</td><td>李四</td><td><span class="tag yellow">审批中</span></td><td>查看</td></tr>
+                <tr><td>CHG-20260211-002</td><td>坏账率</td><td>张三</td><td><span class="tag red">已驳回</span></td><td>查看</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="roles">
+          <div class="section-title">
+            <div>
+              <div class="title">角色权限管理</div>
+              <div class="sub">角色由权限组成，可分配给多个用户</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="toolbar" style="margin-bottom:10px">
+              <input class="input" placeholder="搜索角色名称/编码/描述" />
+              <button class="btn secondary">重置</button>
+              <button class="btn">新增角色</button>
+            </div>
+            <table>
+              <thead>
+                <tr><th>角色名称</th><th>角色编码</th><th>权限</th><th>用户数</th><th>状态</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>系统管理员</td><td>ROLE_ADMIN</td><td>15项</td><td>3</td><td><span class="tag green">启用</span></td></tr>
+                <tr><td>普通员工</td><td>ROLE_EMPLOYEE</td><td>4项</td><td>42</td><td><span class="tag green">启用</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="users">
+          <div class="section-title">
+            <div>
+              <div class="title">用户管理</div>
+              <div class="sub">用户可分配多个角色，权限由角色自动汇总</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="toolbar" style="margin-bottom:10px">
+              <input class="input" placeholder="搜索姓名/邮箱/部门" />
+              <input class="input" placeholder="筛选角色" />
+              <button class="btn">新增用户</button>
+            </div>
+            <table>
+              <thead>
+                <tr><th>用户</th><th>部门</th><th>角色</th><th>权限数</th><th>状态</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>王总</td><td>PMO</td><td>部门经理</td><td>6项</td><td><span class="tag green">启用</span></td></tr>
+                <tr><td>系统管理员</td><td>技术部</td><td>系统管理员、指标管理员</td><td>15项</td><td><span class="tag green">启用</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const nav = document.getElementById('nav');
+      const sections = document.querySelectorAll('.section');
+      nav.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-section]');
+        if (!btn) return;
+        nav.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.getAttribute('data-section');
+        sections.forEach((sec) => sec.classList.toggle('active', sec.id === id));
+      });
+    </script>
+  </body>
+</html>

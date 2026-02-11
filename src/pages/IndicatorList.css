@@ -1,0 +1,94 @@
+/* IndicatorList.css — Executive Grade 3.0 */
+
+.ims-indicator-page {
+  min-height: 100%;
+}
+
+.ims-indicator-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ims-indicator-header__title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.ims-indicator-header__sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* 工具栏 */
+.ims-indicator-toolbar {
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  box-shadow: var(--shadow-xs) !important;
+  margin-bottom: 16px;
+}
+
+/* 表格容器 */
+.ims-indicator-table {
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  box-shadow: var(--shadow-xs) !important;
+}
+
+/* 通用辅助类 */
+.ims-mono-id {
+  font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  letter-spacing: -0.02em;
+}
+
+.ims-name-link {
+  padding: 0 !important;
+  height: auto !important;
+  font-weight: 600 !important;
+}
+
+.ims-muted {
+  color: var(--text-tertiary);
+}
+
+.ims-divider {
+  color: var(--text-tertiary);
+  margin: 0 2px;
+}
+
+.ims-tag-sm {
+  font-size: 11px !important;
+}
+
+.ims-action-link {
+  padding: 0 !important;
+  height: auto !important;
+}
+
+/* 详情抽屉区块 */
+.ims-detail-section {
+  background: #f8fafc !important;
+  border: 1px solid rgba(0, 0, 0, 0.03) !important;
+}
+
+.ims-detail-section .ant-card-head {
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* 编辑表单双列布局 */
+.ims-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .ims-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,190 @@
+/* Settings.css — Executive Grade 3.0 */
+
+.ims-settings {
+  min-height: 100%;
+}
+
+.ims-settings-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ims-settings-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.ims-settings-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.ims-settings-shell {
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-xs) !important;
+  overflow: hidden;
+}
+
+.ims-settings-shell .ant-card-body {
+  padding: 16px 20px !important;
+}
+
+.ims-settings-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.ims-seg {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  gap: 2px;
+}
+
+.ims-seg-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.ims-seg-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
+}
+
+.ims-seg-btn.is-active {
+  background: #fff;
+  color: var(--primary-color);
+  box-shadow: var(--shadow-xs);
+}
+
+.ims-settings-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+  .ims-settings-kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ims-kpi {
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, #fff 100%);
+  padding: 14px 16px;
+}
+
+.ims-kpi__label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ims-kpi__value {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ims-muted {
+  color: var(--text-tertiary);
+}
+
+.ims-inline-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ── RBAC tables ── */
+.role-table .ant-table-cell,
+.user-table .ant-table-cell {
+  vertical-align: top;
+}
+
+.role-code,
+.role-type {
+  white-space: nowrap;
+}
+
+.role-perms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.role-perm-preview {
+  margin-top: 8px;
+}
+
+.user-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.user-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.user-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.user-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-perm-preview {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.user-perm-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+  .user-grid {
+    grid-template-columns: 1fr;
+  }
+}

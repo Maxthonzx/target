@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMS 指标管理系统 - 预览版 (v4稳定版)</title>
+
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- DayJS (Antd v4 较新版本也支持 Dayjs，或者我们用 moment 兼容) -->
+    <script src="https://unpkg.com/dayjs/dayjs.min.js"></script>
+
+    <!-- Ant Design v4 (更适合 CDN 直接使用) -->
+    <link rel="stylesheet" href="https://unpkg.com/antd@4.24.15/dist/antd.min.css" />
+    <script src="https://unpkg.com/antd@4.24.15/dist/antd.min.js"></script>
+
+    <!-- Ant Design Icons -->
+    <script src="https://unpkg.com/@ant-design/icons@4.8.3/dist/index.umd.js"></script>
+
+    <!-- ECharts -->
+    <script src="https://unpkg.com/echarts/dist/echarts.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            background: #f0f2f5;
+        }
+
+        #root {
+            height: 100vh;
+        }
+
+        .logo-box {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding-left: 24px;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #52c41a;
+            color: #fff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        /* 胶囊按钮 */
+        .capsule-group {
+            background: #f5f5f5;
+            padding: 4px;
+            border-radius: 20px;
+            display: inline-flex;
+        }
+
+        .capsule-btn {
+            padding: 4px 16px;
+            border-radius: 16px;
+            border: none;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capsule-btn.active {
+            background: #fff;
+            color: #52c41a;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .bg-green {
+            background: #52c41a;
+        }
+
+        .bg-yellow {
+            background: #faad14;
+        }
+
+        .bg-red {
+            background: #ff4d4f;
+        }
+
+        .custom-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tag-green {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .tag-yellow {
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #faad14;
+        }
+
+        .tag-red {
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+
+        /* 侧边栏样式修正 */
+        .ant-layout-sider-children {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // 关键：处理 CDN 导出的全局变量
+        const { useState, useEffect } = React;
+        const { Layout, Menu, Card, Row, Col, Table, Select, Button, Modal, Tag, Statistic, Badge, Avatar, message } = antd;
+        const { Header, Sider, Content } = Layout;
+        
+        // Antd Icons v4 在 CDN 下通常挂载在 window.icons 或 AntDesignIcons
+        const icons = window.icons || window['@ant-design/icons'];
+        const { 
+            DashboardOutlined, DatabaseOutlined, AimOutlined, WarningOutlined, 
+            SettingOutlined, UserOutlined, BellOutlined, ArrowUpOutlined, ArrowDownOutlined,
+            BarChartOutlined, DownloadOutlined
+        } = icons || {};
+
+        const MOCK_DATA = [
+            { key: '1', name: '月度营收', dept: '财务部', owner: '张三', level: '公司级', yearTarget: 12000, unit: '万元', status: 'green', rate: 102.2, monthly: {target:[1000,1000,1000,1000], actual:[1020,1005,1010,null]} },
+            { key: '2', name: '客户满意度', dept: '客服部', owner: '李四', level: '战役级', yearTarget: 95, unit: '%', status: 'yellow', rate: 94.5, monthly: {target:[95,95,95,95], actual:[94,93,92,null]} },
+            { key: '3', name: '投诉率', dept: '客服部', owner: '李四', level: '战役级', yearTarget: 2, unit: '%', status: 'red', rate: 2.8, monthly: {target:[2,2,2,2], actual:[1.8,2.5,2.9,null]} }
+        ];
+
+        const Dashboard = () => {
+            const [viewLevel, setViewLevel] = useState('战役级');
+            const [isModalVisible, setIsModalVisible] = useState(false);
+            const [currentIndicator, setCurrentIndicator] = useState(null);
+
+            const showTrend = (record) => {
+                setCurrentIndicator(record);
+                setIsModalVisible(true);
+                // 延迟渲染图表
+                setTimeout(() => {
+                    const chartDom = document.getElementById('chart-container');
+                    if (chartDom) {
+                        const myChart = echarts.init(chartDom);
+                        myChart.setOption({
+                            title: { text: '2026趋势分析', left: 'center' },
+                            tooltip: { trigger: 'axis' },
+                            xAxis: { type: 'category', data: ['1月','2月','3月','4月'] },
+                            yAxis: { type: 'value' },
+                            series: [
+                                { name: '目标', data: record.monthly.target, type: 'line', lineStyle:{type:'dashed'} },
+                                { name: '实际', data: record.monthly.actual, type: 'line', itemStyle:{color:'#52c41a'} }
+                            ]
+                        });
+                    }
+                }, 100);
+            };
+
+            const columns = [
+                { title: '指标名称', dataIndex: 'name', render: (text, r) => <a onClick={()=>showTrend(r)}>{text} <BarChartOutlined/></a> },
+                { title: '部门', dataIndex: 'dept' },
+                { title: '状态', dataIndex: 'status', render: (status) => {
+                    const map = { green: ['正常','tag-green','bg-green'], yellow:['预警','tag-yellow','bg-yellow'], red:['异常','tag-red','bg-red'] };
+                    const [txt, cls, dot] = map[status];
+                    return <span className={`custom-tag ${cls}`}><span className={`status-dot ${dot}`}></span>{txt}</span>
+                }},
+                { title: '达成率', dataIndex: 'rate', render: (v) => <b style={{color: v>=100?'#52c41a':'#ff4d4f'}}>{v}%</b> },
+                { title: '年度目标', key: 'tgt', render: (_,r) => `${r.yearTarget}${r.unit}` }
+            ];
+
+            return (
+                <div>
+                    <Row gutter={16} style={{marginBottom: 24}}>
+                        <Col span={6}><Card bordered={false} hoverable><Statistic title="指标总数" value={128} prefix={<DatabaseOutlined />}/></Card></Col>
+                        <Col span={6}><Card bordered={false} hoverable><Statistic title="异常指标" value={1} valueStyle={{color: '#ff4d4f'}} prefix={<WarningOutlined />}/></Card></Col>
+                        <Col span={6}><Card bordered={false} hoverable><Statistic title="达成率" value={98.5} precision={1} valueStyle={{color: '#52c41a'}} suffix="%"/></Card></Col>
+                        <Col span={6}><Card bordered={false} hoverable><Statistic title="待审批" value={3} prefix={<BellOutlined />}/></Card></Col>
+                    </Row>
+
+                    <Card style={{marginBottom: 24, borderRadius: 8}} bodyStyle={{padding:'12px 24px'}}>
+                        <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <div className="capsule-group">
+                                {['公司级','战役级','部门级'].map(l => (
+                                    <button key={l} className={`capsule-btn ${viewLevel===l?'active':''}`} onClick={()=>setViewLevel(l)}>{l}</button>
+                                ))}
+                            </div>
+                            <Button icon={<DownloadOutlined/>} type="primary">导出报表</Button>
+                        </div>
+                    </Card>
+
+                    <Card title={`${viewLevel}指标监控`} bordered={false} style={{borderRadius: 8}}>
+                        <Table dataSource={MOCK_DATA} columns={columns} pagination={false} rowKey="key"/>
+                    </Card>
+
+                    <Modal title="趋势详情" visible={isModalVisible} onCancel={()=>setIsModalVisible(false)} footer={null} width={600}>
+                        <div id="chart-container" style={{height: 300, width: '100%'}}></div>
+                    </Modal>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [collapsed, setCollapsed] = useState(false);
+            
+            // 兼容 Antd v4/v5 的 Menu items
+            const menuItems = [
+                { key: '1', icon: <DashboardOutlined />, label: '驾驶舱' },
+                { key: '2', icon: <DatabaseOutlined />, label: '指标字典' },
+                { key: '3', icon: <AimOutlined />, label: '目标管理' },
+            ];
+
+            return (
+                <Layout style={{minHeight: '100vh'}}>
+                    <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} theme="light" width={220}>
+                        <div className="logo-box">
+                            <div className="logo-icon">I</div>
+                            {!collapsed && <span style={{fontSize:16, fontWeight:'bold', color:'#333'}}>指标管理系统</span>}
+                        </div>
+                        <Menu theme="light" defaultSelectedKeys={['1']} mode="inline">
+                            <Menu.Item key="1" icon={<DashboardOutlined />}>驾驶舱</Menu.Item>
+                            <Menu.Item key="2" icon={<DatabaseOutlined />}>指标字典</Menu.Item>
+                            <Menu.Item key="3" icon={<AimOutlined />}>目标管理</Menu.Item>
+                        </Menu>
+                    </Sider>
+                    <Layout>
+                        <Header style={{background:'#fff', padding:'0 24px', textAlign:'right'}}>
+                            <span style={{marginRight:16}}><UserOutlined/> 管理员</span>
+                        </Header>
+                        <Content style={{margin: '24px'}}>
+                            <Dashboard />
+                        </Content>
+                    </Layout>
+                </Layout>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

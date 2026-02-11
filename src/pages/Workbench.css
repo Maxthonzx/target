@@ -1,0 +1,33 @@
+/* Workbench.css */
+
+.ims-workbench {
+  min-height: 0;
+}
+
+.wb-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.wb-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.wb-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.wb-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
