@@ -1,7 +1,7 @@
 # DST 指标管理系统 (Indicator Management System)
 
 一款商用级架构的现代化指标管理系统前端界面，基于 React 19 + Ant Design 6 + ECharts 构建。
-本项目针对静态托管进行了深度优化，支持 GitHub Pages、Cloudflare Pages 以及离线单文件运行。
+本项目支持多平台部署，已配置 GitHub Pages 和腾讯云 CloudBase 双托管，国内外访问均可快速加载。
 
 ![Dashboard Screenshot](./screenshot2.png)
 
@@ -12,9 +12,10 @@
 - **可视化达成率**: 列表集成进度条展示，直观对比年度目标与实际值。
 - **商用美观度**: 全新 Emerald 绿配色系统，优化字体层级与间距。
 - **全流程覆盖**: 包含驾驶舱、指标字典、目标录入、变更审批等核心模块。
-- **极致部署体验**:
-  - **离线单文件**: 编译生成单一 HTML 文件，零依赖，直接双击运行。
-  - **静态路由**: 使用 `HashRouter`，兼容所有静态托管服务。
+- **多平台部署**:
+  - **GitHub Pages**: 海外访问，自动 CI/CD 部署。
+  - **腾讯云 CloudBase**: 国内加速，手动一键部署。
+  - **离线使用**: 构建产物可直接双击运行，无需服务器。
 
 ## 🛠 技术栈
 
@@ -23,7 +24,7 @@
 - **UI 组件库**: Ant Design 6.x
 - **图表库**: ECharts (echarts-for-react)
 - **路由**: React Router v7 (HashRouter)
-- **打包插件**: vite-plugin-singlefile (实现单文件内联)
+- **部署**: 支持 GitHub Pages、腾讯云 CloudBase 等多平台
 
 ## 🚀 快速启动
 
@@ -37,22 +38,55 @@ npm run dev
 
 ## 📦 打包与部署
 
-### 1. 离线单文件打包 (推荐用于发送给同事)
+本项目支持**多平台部署**，针对不同托管环境自动使用对应的构建配置。
 
-本项目已配置 `vite-plugin-singlefile`，构建结果会将所有 JS/CSS 内联到一个 HTML 文件中。
+### 🌐 在线托管平台
 
-```bash
-npm run build
+本项目已配置多平台自动适配，包括：
+
+#### 1️⃣ GitHub Pages（自动部署）
+
+- **访问地址**: [https://maxthonzx.github.io/target/](https://maxthonzx.github.io/target/)
+- **部署方式**: 代码推送到 `main` 分支后，GitHub Actions 自动构建并部署
+- **构建命令**: `npm run build:github`（使用 `/target/` 子路径）
+- **配置文件**: `.github/workflows/deploy.yml`
+
+#### 2️⃣ 腾讯云 CloudBase（手动部署）
+
+- **访问地址**: [https://dst-9g4km5dgd9c765aa-1314600911.tcloudbaseapp.com](https://dst-9g4km5dgd9c765aa-1314600911.tcloudbaseapp.com)
+- **部署方式**: 使用腾讯云 CLI 手动部署，或运行快捷脚本 `.\deploy-tencent.ps1`
+- **构建命令**: `npm run build:tencent`（使用 `/` 根路径）
+- **优势**: 国内 CDN 加速，访问速度更快
+
+**快速部署到腾讯云**：
+```powershell
+# Windows PowerShell
+.\deploy-tencent.ps1
+
+# 或手动执行
+npm run build:tencent
+cloudbase hosting:deploy .\dist -e dst-9g4km5dgd9c765aa
 ```
 
-打包完成后，`dist/index.html` 即为最终产物。**直接双击打开即可，无需 Web 服务器。**
+### 📋 平台差异说明
 
-### 2. 在线部署 (GitHub Pages)
+| 特性 | GitHub Pages | 腾讯云 CloudBase |
+|------|-------------|-----------------|
+| **Base 路径** | `/target/` (子路径) | `/` (根路径) |
+| **构建命令** | `npm run build:github` | `npm run build:tencent` |
+| **部署方式** | Git push 自动触发 | 手动 CLI 部署 |
+| **访问速度** | 海外较快 | 国内 CDN 加速 |
+| **自定义域名** | 支持 | 支持 |
 
-本项目已配置 GitHub Actions (`.github/workflows/deploy.yml`)。
+> **💡 技术实现**: 项目通过 `vite.config.js` 中的环境变量判断，自动为不同平台生成对应的资源路径，确保两个平台都能正常运行。
 
-- **GitHub Pages**: 代码推送到 `main` 分支后自动构建部署。
-  - 访问地址: [https://maxthonzx.github.io/target/](https://maxthonzx.github.io/target/)
+### 📦 离线打包 (发送给同事)
+
+```bash
+npm run build:tencent  # 使用根路径构建
+```
+
+打包完成后，`dist/` 目录包含所有静态资源。**将整个 dist 目录压缩发送，解压后双击 index.html 即可运行。**
 
 ## 📂 项目结构
 
